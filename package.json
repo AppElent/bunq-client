@@ -1,7 +1,7 @@
 {
-  "name": "package-starter",
-  "version": "0.0.0",
-  "description": "Starter",
+  "name": "bunq-client",
+  "version": "0.1.0",
+  "description": "Bunq client for NODE environments",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "build": "npm run build:types && npm run build:js",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir lib --extensions \".js,.jsx,.ts,.tsx\" --source-maps inline",
-    "test": "jest --config jestconfig.json",
+    "test": "jest --config jestconfig.json --passWithNoTests",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "eslint --ext=jsx,ts,tsx,js src",
     "lint:fix": "eslint --ext=jsx,ts,tsx,js src --fix",
@@ -42,5 +42,9 @@
     "prettier": "^1.19.1",
     "ts-jest": "^24.2.0",
     "typescript": "^3.7.3"
+  },
+  "dependencies": {
+    "@bunq-community/bunq-js-client": "^0.42.1",
+    "simple-cache-js": "0.0.1"
   }
 }
