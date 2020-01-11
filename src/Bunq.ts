@@ -9,18 +9,16 @@ interface BunqClients {
 
 export default class Bunq {
     public status: string;
-    private storage: StorageInterface;
     private genericBunqClient: BunqJSClient;
     private requestLimiter: RequestLimitFactory;
     private bunqClients: BunqClients;
 
-    constructor(customStore: StorageInterface) {
-        this.status = 'STARTING';
-        this.storage = customStore;
-        this.genericBunqClient = new BunqJSClient(this.storage);
-
-        this.requestLimiter;
+    constructor() {
         this.bunqClients = {};
+    }
+
+    loadGenericClient(customStore: StorageInterface): void {
+        this.genericBunqClient = new BunqJSClient(customStore);
     }
 
     async load(
