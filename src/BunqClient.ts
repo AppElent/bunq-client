@@ -1,31 +1,39 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Cache from 'simple-cache-js';
 import BunqJSClient from '@bunq-community/bunq-js-client';
+import Amount from '@bunq-community/bunq-js-client/dist/Types/Amount';
+
+type User = {
+    id: number;
+};
+
+type Account = {
+    type: string;
+    value: string;
+    id: string;
+};
 
 export default class BunqClient {
-    public status;
-    private bunqJSClient;
-    private user;
-    private longCache;
-    private shortCache;
-    public environment;
+    public status: string;
+    private bunqJSClient: BunqJSClient;
+    private user: User;
+    private longCache: Cache;
+    private shortCache: Cache;
+    public environment: string;
 
     constructor() {
-        this.status;
-        this.bunqJSClient;
-        this.user;
         this.longCache = new Cache();
         this.shortCache = new Cache(300);
-        this.environment;
     }
 
-    getObject(object): string {
+    getObject(object: any): string {
         const objectKeys = Object.keys(object);
         const objectKey = objectKeys[0];
 
         return object[objectKey];
     }
 
-    defaultErrorLogger(error): void {
+    defaultErrorLogger(error: any): void {
         //console.log('bunq error', error)
         if (error.response) {
             throw error.response.data;
@@ -33,14 +41,21 @@ export default class BunqClient {
         throw error;
     }
 
-    returnErrorLogger(error): {} {
+    returnErrorLogger(error: any): {} {
         if (error.response) {
             return { success: false, message: error.response.data };
         }
         return { success: false, message: error };
     }
 
-    async initialize(filename, accessToken, encryptionKey, environment = 'PRODUCTION', store, options: any = {}) {
+    async initialize(
+        filename: string,
+        accessToken: string,
+        encryptionKey: string,
+        environment = 'PRODUCTION',
+        store: any,
+        options: any = {},
+    ): Promise<void> {
         //Status zetten
         this.status = 'STARTING';
 
@@ -80,19 +95,19 @@ export default class BunqClient {
         this.status = 'READY';
     }
 
-    getBunqJSClient() {
+    getBunqJSClient(): BunqJSClient {
         return this.bunqJSClient;
     }
 
-    getUsers() {
+    getUsers(): User {
         return this.user;
     }
 
-    getUser() {
+    getUser(): User {
         return this.user;
     }
 
-    async getAccounts(forceUpdate = false) {
+    async getAccounts(forceUpdate = false): Promise<[]> {
         const cachekey = 'allaccounts';
         if (forceUpdate) this.longCache.del(cachekey);
         const results = this.longCache.get(cachekey, async () => {
@@ -101,7 +116,7 @@ export default class BunqClient {
                 .catch(this.defaultErrorLogger);
             const resultList = [];
             for (const account of accounts) {
-                const entry = this.getObject(account);
+                const entry: any = this.getObject(account);
                 entry['monetary_bank_account_type'] = Object.keys(account)[0];
                 resultList.push(entry);
             }
@@ -112,9 +127,15 @@ export default class BunqClient {
         return results;
     }
 
-    async createRequestInquiry(from, description, amount, counterparty, options = {}) {
+    async createRequestInquiry(
+        from: Account,
+        description: string,
+        amount: Amount,
+        counterparty: Account,
+        options = {},
+    ): Promise<any> {
         const accounts = await this.getAccounts();
-        const fromAccount = accounts.find(account => account[from.type] === from.value);
+        const fromAccount: any = accounts.find(account => account[from.type] === from.value);
         if (fromAccount === null) {
             console.log('Van account bestaat niet: ', from);
             return false;
@@ -125,9 +146,9 @@ export default class BunqClient {
         return inquiry;
     }
 
-    async createBunqMeTab(from, description, amount, options = {}) {
+    async createBunqMeTab(from: Account, description: string, amount: Amount, options = {}): Promise<void | boolean> {
         const accounts = await this.getAccounts();
-        const fromAccount = accounts.find(account => account[from.type] === from.value);
+        const fromAccount: any = accounts.find(account => account[from.type] === from.value);
         if (fromAccount === null) {
             console.log('Van account bestaat niet: ', from);
             return false;
@@ -138,7 +159,10 @@ export default class BunqClient {
         return bunqmetab;
     }
 
-    async createAccount(name, options = { currency: 'EUR', dailyLimit: '1000.00', color: '#ff9500' }) {
+    async createAccount(
+        name: string,
+        options = { currency: 'EUR', dailyLimit: '1000.00', color: '#ff9500' },
+    ): Promise<any> {
         const account = await this.bunqJSClient.api.monetaryAccountBank.post(
             this.user.id,
             options.currency,
@@ -149,7 +173,8 @@ export default class BunqClient {
         return account;
     }
 
-    async getEvents(options = {}, forceUpdate = false) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async getEvents(options = {}, forceUpdate = false): Promise<any> {
         const cachekey = 'allevents';
         if (forceUpdate) this.shortCache.del(cachekey);
         const events = this.shortCache.get(cachekey, async () => {
@@ -158,11 +183,11 @@ export default class BunqClient {
         return events;
     }
 
-    async makePaymentInternal(from, to, description, amount) {
+    async makePaymentInternal(from: Account, to: Account, description: string, amount: string): Promise<any> {
         const accounts = await this.getAccounts();
 
-        const fromAccount = accounts.find(account => account[from.type] === from.value);
-        const toAccount = accounts.find(account => account[from.type] === to.value);
+        const fromAccount: any = accounts.find(account => account[from.type] === from.value);
+        const toAccount: any = accounts.find(account => account[from.type] === to.value);
         if (fromAccount == null) {
             console.log('Van account bestaat niet: ', from);
             return { success: false, message: 'Van account bestaat niet (' + from.value + ')' };
@@ -172,7 +197,7 @@ export default class BunqClient {
             return { success: false, message: 'Naar account bestaat niet (' + to.value + ')' };
         }
 
-        const counterpartyAlias = toAccount.alias.find(alias => alias.type === 'IBAN'); //this.getAliasByType(to_account, "IBAN");
+        const counterpartyAlias = toAccount.alias.find((alias: any) => alias.type === 'IBAN'); //this.getAliasByType(to_account, "IBAN");
         const paymentResponse = await this.bunqJSClient.api.payment
             .post(this.user.id, fromAccount.id, description, { value: amount, currency: 'EUR' }, counterpartyAlias)
             .catch(this.returnErrorLogger);
@@ -181,10 +206,10 @@ export default class BunqClient {
         return { success: true, paymentResponse };
     }
 
-    async makeDraftPayment(from, to, description, amount) {
+    async makeDraftPayment(from: Account, to: Account, description: string, amount: string): Promise<any> {
         const accounts = await this.getAccounts();
 
-        const fromAccount = accounts.find(account => account[from.type] === from.value);
+        const fromAccount: any = accounts.find(account => account[from.type] === from.value);
         if (fromAccount == null) {
             console.log('Van account bestaat niet: ', from);
             return false;

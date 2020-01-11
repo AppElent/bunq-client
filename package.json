@@ -22,7 +22,9 @@
     "lint:fix": "eslint --ext=jsx,ts,tsx,js src --fix",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
-    "preversion": "npm run lint"
+    "publish:patch": "git add -A && git commit -m \"commit\" && npm version patch && npm publish",
+    "publish:minor": "git add -A && git commit -m \"commit\" && npm version minor && npm publish",
+    "publish:major": "git add -A && git commit -m \"commit\" && npm version major && npm publish"
   },
   "devDependencies": {
     "@types/jest": "^24.0.24",
