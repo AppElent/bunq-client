@@ -7,7 +7,7 @@ interface BunqClients {
     [key: string]: BunqClient;
 }
 
-export class Bunq {
+export default class Bunq {
     public status: string;
     private storage: StorageInterface;
     private genericBunqClient: BunqJSClient;
