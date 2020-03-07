@@ -3,7 +3,7 @@
   "version": "0.5.0",
   "description": "Bunq client for NODE environments",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "types": "lib/*.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ericjansen1988/bunq-client.git"

@@ -1,5 +1,3 @@
-declare module 'json-store';
-
 import JSONStore from 'json-store';
 
 type storeType = {
