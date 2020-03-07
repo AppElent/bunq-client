@@ -2,6 +2,7 @@ import BunqClient from './BunqClient';
 import BunqJSClient from '@bunq-community/bunq-js-client';
 import RequestLimitFactory from '@bunq-community/bunq-js-client/dist/RequestLimitFactory';
 import StorageInterface from '@bunq-community/bunq-js-client/dist/Interfaces/StorageInterface';
+import store from './Store';
 
 interface BunqClients {
     [key: string]: BunqClient;
@@ -12,13 +13,15 @@ export default class Bunq {
     private genericBunqClient: BunqJSClient;
     private requestLimiter: RequestLimitFactory;
     private bunqClients: BunqClients;
+    private folder: string;
 
-    constructor() {
+    constructor(folder: string) {
         this.bunqClients = {};
+        this.folder = folder;
     }
 
-    loadGenericClient(customStore: StorageInterface): void {
-        this.genericBunqClient = new BunqJSClient(customStore);
+    loadGenericClient(): void {
+        this.genericBunqClient = new BunqJSClient(store(this.folder + '/genericClient.json'));
     }
 
     async load(
@@ -30,7 +33,14 @@ export default class Bunq {
         options: {},
     ): Promise<void> {
         this.bunqClients[key] = new BunqClient();
-        await this.bunqClients[key].initialize(filename, accessToken, encryptionKey, environment, options);
+        await this.bunqClients[key].initialize(
+            filename,
+            accessToken,
+            encryptionKey,
+            environment,
+            store(this.folder + '/' + key + '.json'),
+            options,
+        );
     }
 
     getGenericClient(): BunqJSClient {
