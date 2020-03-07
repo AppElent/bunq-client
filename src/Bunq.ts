@@ -1,7 +1,6 @@
 import BunqClient from './BunqClient';
 import BunqJSClient from '@bunq-community/bunq-js-client';
 import RequestLimitFactory from '@bunq-community/bunq-js-client/dist/RequestLimitFactory';
-import StorageInterface from '@bunq-community/bunq-js-client/dist/Interfaces/StorageInterface';
 import store from './Store';
 
 interface BunqClients {

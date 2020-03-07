@@ -1,5 +1,10 @@
-// @ts-ignore
 import JSONStore from 'json-store';
+
+type storeType = {
+    get: (key: string) => any; //eslint-disable-line
+    set: (key: string) => void;
+    remove: (key: string) => void;
+};
 
 const store = (fileLocation: string): any => {
     const store = JSONStore(fileLocation);
